@@ -1,0 +1,94 @@
+<form [formGroup]="form" (reset)="onReset($event)" (ngSubmit)="onSubmit($event)" class="form">
+  <div class="form-field">
+    <label for="name">First Name</label>
+    <input [errorStateMatcher]="showErrorStrategy" formControlName="firstName" type="text" id="name" placeholder="Enter your name">
+  </div>
+  <div class="form-field">
+    <label for="last-name">Last Name</label>
+    <input formControlName="lastName" type="text" id="last-name" placeholder="Enter your last name">
+  </div>
+  <div class="form-field">
+    <label for="nickname">Nickname</label>
+    <input formControlName="nickname" type="text" id="nickname" placeholder="Come up with a nickname">
+    <ng-container *ngIf="form.controls.nickname as nickname">
+      <div class="input-info" *ngIf="nickname.pending">Checking nickname...</div>
+    </ng-container>
+  </div>
+  <div class="form-field">
+    <label for="email">Email</label>
+    <input formControlName="email" type="email" id="email" placeholder="Provide your email">
+  </div>
+  <div class="form-field-inline-group">
+    <div class="form-field form-field--small">
+      <label for="year-of-birth">Year of birth</label>
+      <select formControlName="yearOfBirth" id="year-of-birth">
+        <option *ngFor="let year of years" [value]="year">{{year}}</option>
+      </select>
+    </div>
+    <div class="form-field form-field--small">
+      <label for="passport">Passport Number</label>
+      <input formControlName="passport" type="text" id="passport" placeholder="Provide Passport Data">
+    </div>
+  </div>
+  <fieldset formGroupName="address">
+    <legend>Address</legend>
+    <div class="form-field">
+      <label for="full-address">Full Address</label>
+      <input formControlName="fullAddress" type="text" id="full-address" placeholder="Street name and house number">
+    </div>
+    <div class="form-field">
+      <label for="city">City</label>
+      <input formControlName="city" type="text" id="city" placeholder="City">
+    </div>
+    <div class="form-field">
+      <label for="post-code">Post Code</label>
+      <input formControlName="postCode" type="number" id="post-code" placeholder="Post code">
+    </div>
+  </fieldset>
+  <fieldset formArrayName="phones">
+    <legend>Phones</legend>
+    <div class="control-buttons">
+      <button class="add-button" (click)="addPhone()" type="button">+</button>
+    </div>
+    <div class="form-field" *ngFor="let phone of form.controls.phones.controls; index as i" [formGroupName]="i">
+      <label for="phone-{{i}}">Phone number</label>
+      <div class="control-container">
+        <select class="phone-label-dropdown" formControlName="label">
+          <option *ngFor="let label of phoneLabels" [value]="label">{{label}}</option>
+        </select>
+        <input formControlName="phone" type="text" placeholder="Enter Phone Number" id="phone-{{i}}">
+        <button class="remove-button" (click)="removePhone(i)" type="button">-</button>
+      </div>
+    </div>
+  </fieldset>
+  <fieldset formGroupName="skills">
+    <legend>User Skills</legend>
+    <ng-container *ngIf="skills$ | async as skills; else loading">
+      <div class="skill-container" *ngFor="let skill of skills">
+        <input type="checkbox" [formControlName]="skill" [id]="skill">
+        <label [for]="skill">{{ skill | titlecase }}</label>
+      </div>
+    </ng-container>
+
+  </fieldset>
+  <fieldset formGroupName="password" [container]="containerDir.container">
+    <legend>Password</legend>
+    <div class="form-field">
+      <label for="password">Create Password</label>
+      <input formControlName="password" type="password" id="password" placeholder="Enter password...">
+    </div>
+    <div class="form-field">
+      <label for="confirm-password">Confirm Password</label>
+      <input withoutValidationErrors formControlName="confirmPassword" type="password" id="confirm-password" placeholder="Enter password...">
+      <ng-container validatorMessageContainer #containerDir="validatorMessageContainer"></ng-container>
+    </div>
+  </fieldset>
+  <button [disabled]="form.invalid || form.pending">Save</button>
+  <button class="reset-button" type="reset" [disabled]="form.pristine">Reset</button>
+</form>
+
+<ng-template #loading>
+  <p>Skills are loading...</p>
+</ng-template>
+
+

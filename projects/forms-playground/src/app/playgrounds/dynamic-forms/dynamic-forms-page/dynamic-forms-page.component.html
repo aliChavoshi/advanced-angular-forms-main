@@ -1,0 +1,15 @@
+<div class="action-buttons">
+  <button (click)="formLoadingTrigger.next('user')" type="button">Load User Form</button>
+  <button (click)="formLoadingTrigger.next('company')" type="button">Load Company Form</button>
+</div>
+<div *ngIf="formConfig$ | async as formConfig" class="dynamic-form-container">
+  <form [formGroup]="formConfig.form" (ngSubmit)="onSubmit(formConfig.form)">
+    <h3 class="form-heading">{{formConfig.config.description}}</h3>
+    <ng-container *ngFor="let control of formConfig.config.controls | keyvalue: comparatorFn">
+      <ng-container
+        [ngComponentOutlet]="controlResolver.resolve(control.value.controlType) | async"
+        [ngComponentOutletInjector]="control.key | controlInjector:control.value"></ng-container>
+      </ng-container>
+    <button [disabled]="formConfig.form.invalid">Save</button>
+  </form>
+</div>
